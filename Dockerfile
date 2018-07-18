@@ -8,7 +8,18 @@ RUN groupadd --system nightmare && useradd --system --create-home --gid nightmar
 # Installing the pre-required packages and libraries for electron & Nightmare
 RUN apt-get update && \
       apt-get install -y libgtk2.0-0 libgconf-2-4 \
-      libasound2 libxtst6 libxss1 libnss3 xvfb
+      libasound2 libxtst6 libxss1 libnss3 xvfb 
+
+# xvfb - in-memory stub for x-server
+# x11vnc - remote viewer for x-server
+RUN  apt-get update && \
+  apt-get install -y -q \
+  x11vnc \
+  xvfb \
+  xfonts-100dpi \
+  xfonts-75dpi \
+  xfonts-scalable \
+  xfonts-cyrillic
 
 # Install latest chrome dev package.
 # Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
@@ -23,11 +34,7 @@ RUN apt-get update && apt-get install -y wget --no-install-recommends \
     && apt-get purge --auto-remove -y curl \
     && rm -rf /src/*.deb
 
-# Uncomment to skip the chromium download when installing puppeteer. If you do,
-# you'll need to launch puppeteer with:
-#     browser.launch({executablePath: 'google-chrome-unstable'})
-# ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
-
+EXPOSE 4444 5999
 
 # Add pptr user.
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
@@ -57,7 +64,7 @@ ENV HOST=selenium
 # USER pptruser
 
 # Set the entrypoint for Nightmare
-ENTRYPOINT ["/codecept/docker/entrypoint"]
+ENTRYPOINT ["/scripts/runvnc.sh"]
 
 # Run tests
-CMD ["bash", "/codecept/docker/run.sh"]
+CMD ["bash", "/scripts/run.sh"]
