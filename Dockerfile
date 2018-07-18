@@ -64,7 +64,7 @@ ENV HOST=selenium
 # USER pptruser
 
 # Set the entrypoint for Nightmare
-ENTRYPOINT ["/scripts/runvnc.sh"]
+ENTRYPOINT ["/codecept/docker/runvnc.sh"]
 
 # Run tests
 CMD ["bash", "/scripts/run.sh"]
